@@ -1,0 +1,154 @@
+#wrapper .middle {
+    margin: 0 auto;
+    width: 70%;
+}
+
+#wrapper .middle .left {
+    float: left;
+    width: 70%;
+}
+
+#wrapper .middle .right {
+    float: right;
+    width: 30%;
+}
+
+#wrapper .middle .right .info {
+    width: 90%;
+    float: right;
+    margin-top: 15px;
+    background-color: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#wrapper .middle .right .info .top {
+    width: 100%;
+    height: 150px;
+}
+
+#wrapper .middle .right .info .top img {
+    width: 100%;
+    height: 100%;
+}
+
+#wrapper .middle .right .info .middle {
+    position: relative;
+    width: 100%;
+    height: 60px;
+}
+
+#wrapper .middle .right .info .middle .img {
+    position: absolute;
+    top: -40px;
+    left: 20px;
+    width: 80px;
+    height: 80px;
+}
+#wrapper .middle .right .info .middle .img img {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+#wrapper .middle .right .info .middle .nick {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    font-weight: bolder;
+    font-size: 18px;
+    text-align: center;
+}
+
+#wrapper .middle .right .info .middle .email {
+    width: 100%;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    color: #8d8d8d;
+    font-weight: bolder;
+}
+
+#wrapper .middle .right .info .footer {
+    display: flex;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#wrapper .middle .right .info .footer div {
+    flex: 1;
+}
+
+#wrapper .middle .right .info .footer div .text {
+    font-weight: bolder;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+}
+
+#wrapper .middle .right .info .footer div .num {
+    font-weight: bolder;
+    text-align: center;
+}
+
+#wrapper .middle .right .info .footer div .num a {
+    color: #1E9FFF;
+}
+
+#wrapper .middle .right .desc-text {
+    margin-top: 20px;
+    border-radius: 4px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    float: right;
+    width: 90%;
+    min-height: 60px;
+    background-color: #fff;
+}
+
+#wrapper .middle .left {
+    margin-top: 15px;
+    margin-bottom: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+#wrapper .show-img {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, .8);
+    display: none;
+    overflow: auto;
+}
+
+#wrapper .show-img .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+#wrapper .show-img .close i {
+    font-size: 66px;
+    color: #ff0045;
+    cursor: pointer;
+}
+
+#wrapper .show-img .close i:hover {
+    color: #f00;
+}
+
+#wrapper .show-img .img {
+    width: 600px;
+    height: 300px;
+    margin: 150px auto;
+}
+
+#wrapper .show-img .img img {
+    width: 100%;
+}
+

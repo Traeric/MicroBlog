@@ -1,0 +1,136 @@
+#wrapper .banner {
+    width: 100%;
+    height: 250px;
+    background-image: url("/static/images/banner.png");
+    background-repeat: no-repeat;
+    background-size: 100% 250px;
+}
+
+#wrapper .user-banner {
+    height: 60px;
+    width: 100%;
+    background-color: #fff;
+}
+
+#wrapper .user-banner .inner {
+    position: relative;
+    margin: 0 auto;
+    width: 50%;
+    height: 100%;
+}
+
+#wrapper .user-banner .inner .user-list {
+    float: left;
+}
+
+#wrapper .user-banner .inner .user-list li {
+    float: left;
+    margin-right: 40px;
+    width: 80px;
+    cursor: pointer;
+}
+
+#wrapper .user-banner .inner .user-list li.active a {
+    color: #17d0ff;
+}
+
+#wrapper .user-banner .inner .user-list li.active div.num {
+    box-sizing: border-box;
+    border-bottom: 5px solid #17d0ff;
+}
+
+#wrapper .user-banner .inner .user-list li:hover {
+    background-color: #f9f9f9;
+}
+
+#wrapper .user-banner .inner .user-list li div.text {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-weight: bolder;
+}
+
+#wrapper .user-banner .inner .user-list li div.num {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-weight: bolder;
+    color: #17d0ff;
+}
+
+#wrapper .user-banner .avatar {
+    position: absolute;
+    top: -100px;
+    left: -240px;
+    width: 180px;
+    height: 180px;
+}
+
+#wrapper .user-banner .avatar img {
+    height: 100%;
+    width: 100%;
+    border-radius: 4px;
+}
+
+#wrapper .user-banner .inner button {
+    position: absolute;
+    top: 10px;
+    right: -150px;
+}
+
+#wrapper .middle {}
+
+#wrapper .middle .user-info {
+    float: left;
+    width: 25%;
+}
+
+#wrapper .middle .user-info .info {
+    width: 240px;
+    float: right;
+    box-sizing: border-box;
+    padding-right: 20px;
+}
+
+#wrapper .middle .user-info .info .nick {
+    margin-top: 40px;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+#wrapper .middle .user-info .info .email {
+    height: 30px;
+    line-height: 30px;
+    color: #767676;
+}
+
+#wrapper .middle .user-info .info .info-l {
+    margin-top: 15px;
+    color: #545454;
+}
+
+#wrapper .middle .user-info .info .birthday {
+    margin-top: 30px;
+}
+
+#wrapper .middle .user-info .info .birthday, .create {
+    color: #464646;
+    height: 25px;
+    line-height: 25px;
+}
+
+#wrapper .middle .user-info .info .birthday, .create i {
+    color: #5a5a5a;
+}
+
+#wrapper .middle .show-area {
+    float: left;
+    margin: 20px 0;
+    width: 50%;
+    background-color: #fff;
+}
+
+
+
+
+

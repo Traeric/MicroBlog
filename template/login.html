@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="/static/css/auth.css">
+    <style>
+        body {
+            background-image: url("/static/images/login-bg.jpg");
+        }
+    </style>
+</head>
+
+<body>
+<div class="lowin">
+    <div class="lowin-brand">
+        <img src="/static/images/login.jpg" alt="logo">
+    </div>
+    <div class="lowin-wrapper">
+        <div class="lowin-box lowin-login">
+            <div class="lowin-box-inner">
+                <form id="login_hook" action="/login" method="post">
+                    <p>Sign in to continue</p>
+                    <p style="color: #f00;">{{.err_msg}}</p>
+                    <div class="lowin-group">
+                        <label>Email <a href="javascript:void(0);" class="login-back-link">Sign in?</a></label>
+                        <input type="email" autocomplete="email" name="email" class="lowin-input" required value="{{.email}}">
+                    </div>
+                    <div class="lowin-group password-group">
+                        <label>Password <a href="javascript:void(0);" class="forgot-link">Forgot Password?</a></label>
+                        <input type="password" name="password" autocomplete="current-password" class="lowin-input" required value="{{.password}}">
+                    </div>
+                    <button class="lowin-btn login-btn" type="submit">
+                        Sign In
+                    </button>
+
+                    <div class="text-foot">
+                        Don't have an account? <a href="javascript:void(0);" class="register-link">Register</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 注册 -->
+        <div class="lowin-box lowin-register">
+            <div class="lowin-box-inner">
+                <form method="post" action="/register">
+                    <p>Let's create your account</p>
+                    <div class="lowin-group">
+                        <label>Name</label>
+                        <input type="text" name="name" autocomplete="name" class="lowin-input" required>
+                    </div>
+                    <div class="lowin-group">
+                        <label>Email</label>
+                        <input type="email" autocomplete="email" name="email" class="lowin-input" required>
+                    </div>
+                    <div class="lowin-group">
+                        <label>Password</label>
+                        <input type="password" name="password" autocomplete="current-password" class="lowin-input" required>
+                    </div>
+                    <button class="lowin-btn" type="submit">
+                        Sign Up
+                    </button>
+
+                    <div class="text-foot">
+                        Already have an account? <a href="javascript:void(0);" class="login-link">Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="lowin-footer">
+        © 2019-5-30 Micro Blog
+    </footer>
+</div>
+
+<script src="/static/js/auth.js"></script>
+<script>
+    Auth.init({
+        login_url: '#login',
+        forgot_url: '#forgot'
+    });
+
+    (function () {
+        document.getElementById("login_hook").setAttribute("action", "/login");
+    })();
+</script>
+</body>
+</html>

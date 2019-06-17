@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Micro Blog</title>
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/write-blog.css">
+    {{template "head" .}}
+</head>
+<body class="bg">
+<div id="wrapper">
+    {{template "nav" .}}
+    <div class="middle clear-float">
+        <div class="left">
+            <!-- 撰写博客 -->
+            {{template "write_blog" .}}
+            <!-- 博文 -->
+            {{template "blog-item" .}}
+        </div>
+        <div class="right">
+            <div class="info">
+                <div class="top"><img src="{{.background}}" alt="NO IMG"></div>
+                <div class="middle">
+                    <a href="/home_page"><div class="img"><img src="{{.avatar}}" alt="NO IMG"></div></a>
+                    <div class="nick">{{.name}}</div>
+                    <div class="email">{{.email}}</div>
+                </div>
+                <div class="footer">
+                    <div class="blog">
+                        <div class="text">博文</div>
+                        <div class="num"><a href="/home_page">{{.blog_num}}</a></div>
+                    </div>
+                    <div class="following">
+                        <div class="text">正在关注</div>
+                        <div class="num"><a href="/following/{{.id}}">{{.following_num}}</a></div>
+                    </div>
+                    <div class="follower">
+                        <div class="text">关注者</div>
+                        <div class="num"><a href="/follower/{{.id}}">{{.follower_num}}</a></div>
+                    </div>
+                </div>
+            </div>
+            <div class="desc-text">个人简介：{{.info}}</div>
+        </div>
+    </div>
+    {{template "footer" .}}
+    <!-- 图片放大展示 -->
+    <div class="show-img">
+        <span class="close"><i class="layui-icon layui-icon-close-fill" onclick="closeImg()"></i></span>
+        <div class="img">
+            <img src="/static/images/logo.png" alt="NO IMG">
+        </div>
+    </div>
+</div>
+
+<script>
+    // 首页样式
+    (function () {
+        $(".func-list li").removeClass("active");
+        $(".func-list li:eq(0)").addClass("active");
+    })();
+
+
+    // 关闭图片
+    function closeImg() {
+        $(".show-img").css("display", "none");
+    }
+
+    // 点击放大图片
+    $(".blog-img").click((event) => {
+        let targetDom = event.currentTarget;
+        // 更换图片的url
+        let url = $(targetDom).children("img").attr("src");
+        $(".show-img .img img").attr("src", url);
+        $(".show-img").css("display", "block");
+    });
+</script>
+{{template "write-comment" .}}
+</body>
+</html>

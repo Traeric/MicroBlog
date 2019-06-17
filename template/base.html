@@ -1,0 +1,480 @@
+{{define "head"}}
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <link rel="stylesheet" href="/static/css/write-blog.css">
+    <link rel="stylesheet" href="/static/plugin/layui/css/layui.css">
+    <script src="/static/plugin/layui/layui.js"></script>
+    <script src="/static/js/jquery.js"></script>
+{{end}}
+
+{{define "nav"}}
+    <nav class="nav">
+        <div class="inner">
+            <div class="left">
+                <ul class="func-list">
+                    <a href="/">
+                        <li><i class="layui-icon layui-icon-home"></i> 首页</li>
+                    </a>
+                    <a href="/home_page">
+                        <li><i class="layui-icon layui-icon-username"></i> 个人主页</li>
+                    </a>
+                    <li><i class="layui-icon layui-icon-notice"></i> 通知</li>
+                    <a href="/chat">
+                        <li><i class="layui-icon layui-icon-dialogue"></i> 私信</li>
+                    </a>
+                </ul>
+            </div>
+            <div class="middle"><img class="logo" src="/static/images/logo.png" alt="NO IMG"></div>
+            <div class="right">
+                <div class="send-blog">
+                    <button class="layui-btn layui-btn-normal" onclick="showBlogContent()">
+                        <i class="layui-icon layui-icon-release"></i> 发博
+                    </button>
+                </div>
+                <a href="/home_page">
+                    <div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div>
+                </a>
+                <div class="search">
+                    <div class="input"><input type="text" placeholder="搜索微博客用户"></div>
+                    <div class="search-button">
+                        <i class="layui-icon">&#xe615;</i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 发博客 -->
+    <div class="send-blog-bg">
+        <div class="box">
+            <div class="head">
+                撰写新博客
+                <i class="layui-icon delete" onclick="closeBlogContent()">&#x1006;</i>
+            </div>
+            <div class="body">
+                {{template "write_blog" .}}
+            </div>
+        </div>
+    </div>
+    <!-- 开启摄像头 -->
+    <div class="bg-content">
+        <div class="show-photo">
+            <video id="video" width="600px" height="600px" autoplay="autoplay"></video>
+            <canvas id="canvas" width="600px" height="600px"></canvas>
+            <a id="downloadA"></a>
+        </div>
+        <div class="take-photo">
+            <button type="button" class="layui-btn layui-btn-fluid layui-btn-normal" onclick="takePhoto()">
+                <i class="layui-icon">&#xe660;</i>
+                拍照
+            </button>
+        </div>
+        <div class="close-photo">
+            <button type="button" class="layui-btn layui-btn-fluid layui-btn-danger" onclick="closePhoto()">
+                <i class="layui-icon">&#x1006;</i>
+                关闭
+            </button>
+        </div>
+    </div>
+{{end}}
+
+{{define "footer"}}
+    <footer id="footer"></footer>
+{{end}}
+
+
+{{define "write_blog"}}
+    <div class="write-blog">
+        <div class="show-area">
+            <div class="img"><img src="{{.avatar}}" alt="NO IMG"></div>
+            <div class="w-text" contenteditable="true" oninput="writeBlog(event)"></div>
+        </div>
+        <div class="tool-list">
+            <div class="item">
+                <div class="tool-item">
+                    <i class="layui-icon layui-icon-camera-fill" onclick="takeAPhoto()"></i>
+                </div>
+                <div class="tool-item">
+                    <input type="file" title="上传图片" name="blog-photo" multiple="multiple" onchange="uploadPhoto(this)">
+                    <i class="layui-icon layui-icon-picture"></i>
+                </div>
+            </div>
+            <div class="send-btn">
+                <div class="button">
+                    <button class="layui-btn layui-btn-normal" onclick="sendBlog(event)">
+                        <i class="layui-icon layui-icon-release"></i> 发博
+                    </button>
+                </div>
+                <div class="text-num" id="text-num">140</div>
+            </div>
+        </div>
+        <div class="photo-show clear-float"></div>
+    </div>
+{{end}}
+
+{{define "blog-item"}}
+    {{range .blogs}}
+        <div class="blog-item">
+            <div class="blog">
+                <div class="img"><img src="{{.user.Avatar}}" alt="NO IMG"></div>
+                <div class="text">
+                    <div class="blog-info">
+                        <span class="user">{{.user.Name}}</span>
+                        <span class="time">{{.createAt}}</span>
+                        {{if eq $.id .user.ID}}
+                            <span class="delete"><i class="layui-icon layui-icon-delete" title="删除博文"></i></span>
+                        {{end}}
+                    </div>
+                    <div class="blog-content">
+                        <div class="text">{{.content}}</div>
+                        <div class="photo">
+                            {{range .Photos}}
+                                <div class="blog-img">
+                                    <img src="{{.PhotoPath}}" alt="NO IMG">
+                                </div>
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tools">
+                    <span>
+                        <i class="layui-icon layui-icon-star-fill" title="点赞" onclick="ThumbUp({{.id}})"></i> {{.ThumbUpNum}}
+                    </span>
+                <span>
+                        <i class="layui-icon layui-icon-reply-fill" title="评论"
+                           onclick="showComment(0, {{.id}})"></i> {{.CommentNum}}
+                    </span>
+                <span>
+                        <i class="layui-icon layui-icon-share" title="分享"></i>
+                    </span>
+            </div>
+            <div class="comment">
+                <!-- 单个评论项 -->
+                {{.comments}}
+            </div>
+        </div>
+    {{end}}
+{{end}}
+
+{{define "write-comment"}}
+    <script>
+        // 评论
+        function showComment(comment_id, blog_id) {
+            layui.use('layer', function () {
+                let layer = layui.layer;
+
+                layer.open({
+                    title: '添加评论',
+                    offset: '200px',
+                    skin: "layui-layer-lan",
+                    closeBtn: 2,
+                    type: 0,
+                    area: '30%',
+                    anim: 1,
+                    btn: ["确定添加", "关闭"],
+                    content: `<input type="text" name="comment" required lay-verify="required" placeholder="请输入评论" autocomplete="off" class="layui-input">`,
+                    yes: function (index, layero) {
+                        // 获取评论
+                        let comment = $("input[name=comment]").val().trim();
+                        if (comment === "") {
+                            layer.msg("评论内容不能为空！", {
+                                icon: 5,
+                                offset: "150px",
+                            });
+                            return null;
+                        }
+                        // 发送请求添加评论
+                        $.ajax({
+                            url: "/add_comment",
+                            type: "post",
+                            data: {
+                                "comment": comment,  // 评论内容
+                                "blog_id": blog_id,
+                                "comment_id": comment_id,
+                            },
+                            dataType: "JSON",
+                            success(data) {
+                                if (data.flag) {
+                                    // 评论成功
+                                    layer.msg(data.msg, {
+                                        icon: 1,
+                                        offset: "150px",
+                                    });
+                                } else {
+                                    // 评论失败
+                                    layer.msg(data.msg, {
+                                        icon: 5,
+                                        offset: "150px",
+                                    });
+                                }
+                            },
+                        });
+                        layer.close(index);
+                    }
+                });
+            });
+
+        }
+
+        /**
+         * 删除评论
+         * @param comment_id
+         * @param blog_id
+         * @param self
+         */
+        function deleteComment(comment_id, blog_id, self) {
+            layui.use('layer', function () {
+                //配置一个透明的询问框
+                layer.msg('确认删除该条评论？', {
+                    btn: ['删除', '取消'],
+                    offset: "150px",
+                    btnAlign: 'c',
+                    yes: function () {
+                        // 发送删除申请
+                        $.ajax({
+                            url: "/delete_comment/" + comment_id + "/" + blog_id,
+                            type: "delete",
+                            dataType: "JSON",
+                            success(data) {
+                                if (data.flag) {
+                                    layer.msg(data.msg, {
+                                        icon: 1,
+                                        offset: "150px",
+                                    });
+                                    // 移除评论
+                                    $(self).parent().parent().remove();
+                                }
+                            },
+                        });
+                    }
+                });
+            });
+        }
+
+        /**
+         * 点赞
+         * @param blog_id
+         * @constructor
+         */
+        function ThumbUp(blog_id) {
+            alert(blog_id);
+        }
+
+        function showBlogContent() {
+            $("#wrapper .send-blog-bg").css("display", "block");
+        }
+
+        function closeBlogContent() {
+            $("#wrapper .send-blog-bg").css("display", "none");
+            $(".write-blog .photo-show").empty();
+            $(".write-blog .photo-show").css({
+                "background-color": "transparent",
+                "border": "none",
+                "padding": "0",
+            });
+            $(".write-blog .show-area .w-text").html('');
+            PhotoObj.delete("photos");
+            PhotoObj.delete("content");
+
+        }
+    </script>
+    <!-- 写微博的js文件 -->
+    <script>
+        /**
+         * 写微博的字数检测
+         * @param e
+         */
+        function writeBlog(e) {
+            let currentDom = e.currentTarget;
+            // 获取内容
+            let content = $(currentDom).html();
+            // 计算内容限制
+            let newRestNum = 140 - content.length;
+            if (newRestNum >= 0) {
+                $("#text-num").html(newRestNum);
+            } else {
+                content = content.substring(0, 140);
+                $(currentDom).html(content);
+                $(currentDom).blur();
+            }
+        }
+
+        /**
+         * 上传微博图片
+         */
+        let PhotoObj = new FormData();
+
+        // 上传图片
+        function uploadPhoto(self) {
+            $(".write-blog .photo-show").css({
+                "background-color": "#fff",
+                "border": "1px solid #dedede",
+                "padding": "5px",
+            });
+            // 获取上传的图片
+            let fileList = $(self).get(0).files;
+            for (let item of fileList) {
+                // 添加到PhotoObj中
+                PhotoObj.append("photos", item, item.name);
+                let src = URL.createObjectURL(item);
+                let photoItem = `
+                    <div class="item">
+                        <i class="delete layui-icon">&#x1007;</i>
+                        <img src="${src}" alt="NO IMG">
+                    </div>
+                `;
+                $(".write-blog .photo-show").append(photoItem);
+            }
+        }
+
+        // 移除图片
+        $(".write-blog .photo-show").click((event) => {
+            let currentDom = event.target;
+            // 从PhotoObj中移除
+            let index = Array.prototype.slice.call($(".write-blog .photo-show .item")).indexOf($(currentDom).parent().get(0));
+            let fileList = PhotoObj.getAll("photos");
+            fileList.splice(index, 1);
+            PhotoObj.delete("photos");
+            for (let item of fileList) {
+                PhotoObj.append("photos", item, item.name);
+            }
+
+            if (currentDom.localName !== "i") {
+                return null;
+            }
+            let itemDom = $(currentDom).parent();
+            $(currentDom).parent().css({
+                "opacity": "0",
+                "transition": "width 0.5s",
+                "width": "0px",
+            });
+            $(currentDom).remove();
+            let timer = setTimeout(() => {
+                itemDom.remove();
+                clearTimeout(timer);
+                if ($(event.currentTarget).children(".item").length <= 0) {
+                    $(".write-blog .photo-show").css({
+                        "background-color": "transparent",
+                        "border": "none",
+                        "padding": "0",
+                    });
+                }
+            }, 500);
+        });
+
+        (function () {
+            if ($(".write-blog .photo-show .item").length <= 0) {
+                $(".write-blog .photo-show").css({
+                    "background-color": "transparent",
+                    "border": "none",
+                    "padding": "0",
+                });
+            }
+        })();
+
+        /**
+         * 发送微博
+         */
+        function sendBlog(event) {
+            let layer = null;
+            layui.use('layer', function () {
+                layer = layui.layer;
+            });
+
+            // 获取微博文字内容
+            let currentDom = event.currentTarget;
+            let content = $(currentDom).parent().parent().parent().parent().children(".show-area").children(".w-text").html();
+            if (content.trim() === "") {
+                layer.msg("内容不能为空", {
+                    icon: 5,
+                    offset: "150px",
+                });
+                return null;
+            }
+            PhotoObj.append("content", content);
+            $.ajax({
+                url: "/send_blog",
+                type: "post",
+                data: PhotoObj,
+                processData: false,
+                contentType: false,
+                dataType: "JSON",
+                success(data) {
+                    if (data.flag) {
+                        // 发表成功
+                        layer.msg(data.msg, {
+                            icon: 1,
+                            offset: "150px",
+                        });
+                        // 清空所有的内容
+                        $(".write-blog .photo-show").empty();
+                        $(".write-blog .photo-show").css({
+                            "background-color": "transparent",
+                            "border": "none",
+                            "padding": "0",
+                        });
+                        $(".write-blog .show-area .w-text").html('');
+                        PhotoObj.delete("photos");
+                        PhotoObj.delete("content");
+                    } else {
+                        // 发表失败
+                        layer.msg(data.msg, {
+                            icon: 5,
+                            offset: "150px",
+                        });
+                    }
+                },
+            });
+        }
+
+        /**
+         * 开启摄像头
+         */
+        let mediaStreamTrack = null; // 视频对象(全局)
+        function takeAPhoto() {
+            $(".bg-content").css("display", "block");
+            let constraints = {
+                video: {width: 600, height: 600},
+                audio: true
+            };
+            //获得video摄像头区域
+            let video = document.getElementById("video");
+            //这里介绍新的方法，返回一个 Promise对象
+            // 这个Promise对象返回成功后的回调函数带一个 MediaStream 对象作为其参数
+            // then()是Promise对象里的方法
+            // then()方法是异步执行，当then()前的方法执行完后再执行then()内部的程序
+            // 避免数据没有获取到
+            let promise = navigator.mediaDevices.getUserMedia(constraints);
+            promise.then(function (MediaStream) {
+                mediaStreamTrack = typeof MediaStream.stop === 'function' ? MediaStream : MediaStream.getTracks()[1];
+                video.srcObject = MediaStream;
+                video.muted = true;
+                video.play();
+            });
+        }
+
+        /**
+         * 拍摄照片
+         */
+        function takePhoto() {
+            let video = document.getElementById("video");
+            let canvas = document.getElementById("canvas");
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0);
+
+            let img = document.getElementById("canvas").toDataURL("image/png");
+            var triggerDownload = $("#downloadA").attr("href", img).attr("download", "micro-blog.png");
+            triggerDownload[0].click();
+        }
+
+        /**
+         * 关闭摄像头
+         */
+        function closePhoto() {
+            mediaStreamTrack.stop();
+            $(".bg-content").css("display", "none");
+        }
+    </script>
+{{end}}
+
+
