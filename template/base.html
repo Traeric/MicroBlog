@@ -14,7 +14,7 @@
                     <a href="/">
                         <li><i class="layui-icon layui-icon-home"></i> 首页</li>
                     </a>
-                    <a href="/home_page">
+                    <a href="/home_page/{{.id}}">
                         <li><i class="layui-icon layui-icon-username"></i> 个人主页</li>
                     </a>
                     <li><i class="layui-icon layui-icon-notice"></i> 通知</li>
@@ -30,7 +30,7 @@
                         <i class="layui-icon layui-icon-release"></i> 发博
                     </button>
                 </div>
-                <a href="/home_page">
+                <a href="/home_page/{{.id}}">
                     <div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div>
                 </a>
                 <div class="search">
@@ -121,7 +121,9 @@
                         <span class="user">{{.user.Name}}</span>
                         <span class="time">{{.createAt}}</span>
                         {{if eq $.id .user.ID}}
-                            <span class="delete"><i class="layui-icon layui-icon-delete" title="删除博文"></i></span>
+                            <span class="delete">
+                                <i class="layui-icon layui-icon-delete" title="删除博文" onclick="deleteBlog({{.id}}, event)"></i>
+                            </span>
                         {{end}}
                     </div>
                     <div class="blog-content">
@@ -138,7 +140,8 @@
             </div>
             <div class="tools">
                     <span>
-                        <i class="layui-icon layui-icon-star-fill" title="点赞" onclick="ThumbUp({{.id}})"></i> {{.ThumbUpNum}}
+                        <i class="layui-icon layui-icon-star-fill" title="点赞"
+                           onclick="ThumbUp({{.id}})"></i> {{.ThumbUpNum}}
                     </span>
                 <span>
                         <i class="layui-icon layui-icon-reply-fill" title="评论"
@@ -149,7 +152,7 @@
                     </span>
             </div>
             <div class="comment">
-                <!-- 单个评论项 -->
+                <!-- 评论项，从后端加载 -->
                 {{.comments}}
             </div>
         </div>
@@ -200,6 +203,7 @@
                                         icon: 1,
                                         offset: "150px",
                                     });
+                                    // location.reload();
                                 } else {
                                     // 评论失败
                                     layer.msg(data.msg, {
@@ -258,6 +262,49 @@
          */
         function ThumbUp(blog_id) {
             alert(blog_id);
+        }
+
+        /**
+         * 删除博客
+         * @param blog_id
+         * @param event
+         */
+        function deleteBlog(blog_id, event) {
+            let currentDom = event.currentTarget;
+            layui.use('layer', function () {
+                //示范一个公告层
+                layer.open({
+                    type: 1,
+                    title: false,  // 不显示标题栏
+                    closeBtn: false,
+                    area: '300px;',
+                    shade: 0.8,
+                    id: 'LAY_layuipro',   // 设定一个id，防止重复弹出
+                    btn: ['确认删除', '再考虑考虑'],
+                    btnAlign: 'c',
+                    moveType: 1,    // 拖拽模式，0或者1
+                    content: `
+                                <div style="padding: 50px; line-height: 22px; background-color: #393D49; color: #fff; font-weight: 300; text-align: center;">
+                                    <i class="layui-icon layui-icon-tips" style="color: #f00; font-weight: bolder; font-size: 20px;"></i>
+                                    <b>是否删除该博客？</b>
+                                </div>`
+                    ,
+                    yes: function (index, layero) {
+                        $.ajax({
+                            url: "/delete_blog/" + blog_id,
+                            type: "delete",
+                            dataType: "JSON",
+                            success(data) {
+                                if (data.flag) {
+                                    // 删除成功
+                                    $(currentDom).parent().parent().parent().parent().parent().remove();
+                                    layer.close(index);
+                                }
+                            },
+                        });
+                    }
+                });
+            });
         }
 
         function showBlogContent() {

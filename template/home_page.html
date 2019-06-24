@@ -13,36 +13,48 @@
     <div class="user-banner">
         <div class="inner">
             <ul class="user-list">
-                <li>
-                    <a href="/home_page">
+                <li class="active">
+                    <a href="/home_page/{{.home_page_id}}">
                         <div class="text">博文</div>
-                        <div class="num">12</div>
+                        <div class="num">{{.blog_num}}</div>
                     </a>
                 </li>
                 <li>
-                    <a href="/following/{{.id}}">
+                    <a href="/following/{{.home_page_id}}">
                         <div class="text">正在关注</div>
-                        <div class="num">12</div>
+                        <div class="num">{{.following_num}}</div>
                     </a>
                 </li>
                 <li>
-                    <a href="/follower/{{.id}}">
+                    <a href="/follower/{{.home_page_id}}">
                         <div class="text">关注者</div>
-                        <div class="num">12</div>
+                        <div class="num">{{.follower_num}}</div>
                     </a>
                 </li>
             </ul>
-            <button class="layui-btn layui-btn-primary">
-                <i class="layui-icon">&#xe642;</i> 编辑个人资料
-            </button>
+            {{if eq .id .home_page_id}}
+                <button class="layui-btn layui-btn-primary">
+                    <i class="layui-icon">&#xe642;</i> 编辑个人资料
+                </button>
+            {{else}}
+                {{if eq .followed 0}}
+                    <button class="layui-btn layui-btn-normal" onclick="follow({{.home_page_id}}, {{.id}})">
+                        <i class="layui-icon">&#xe67a;</i> 关注用户
+                    </button>
+                {{else}}
+                    <button class="layui-btn layui-btn-danger" onclick="unfollow({{.home_page_id}}, {{.id}})">
+                        <i class="layui-icon">&#x1007;</i> 取消关注
+                    </button>
+                {{end}}
+            {{end}}
 
-            <a href="/home_page">
-                <div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div>
+            <a href="/home_page/{{.home_page_id}}">
+                <div class="avatar"><img src="{{.user_avatar}}" alt="NO IMG"></div>
             </a>
         </div>
     </div>
     <div class="middle clear-float">
-        <div class="user-info clear-float">
+        <div class="user-info-home clear-float">
             <div class="info">
                 <div class="nick">{{.name}}</div>
                 <div class="email">{{.email}}</div>
@@ -57,6 +69,13 @@
         </div>
     </div>
     {{template "footer" .}}
+    <!-- 图片放大展示 -->
+    <div class="show-img">
+        <span class="close"><i class="layui-icon layui-icon-close-fill" onclick="closeImg()"></i></span>
+        <div class="img">
+            <img src="/static/images/logo.png" alt="NO IMG">
+        </div>
+    </div>
 </div>
 
 <script>
@@ -64,10 +83,56 @@
     (function () {
         $(".func-list li").removeClass("active");
         $(".func-list li:eq(1)").addClass("active");
-
-        $("#wrapper .user-banner .inner .user-list li").removeClass("active");
-        $("#wrapper .user-banner .inner .user-list li:eq(0)").addClass("active");
     })();
+
+    // 关闭图片
+    function closeImg() {
+        $(".show-img").css("display", "none");
+    }
+
+    // 点击放大图片
+    $(".blog-img").click((event) => {
+        let targetDom = event.currentTarget;
+        // 更换图片的url
+        let url = $(targetDom).children("img").attr("src");
+        $(".show-img .img img").attr("src", url);
+        $(".show-img").css("display", "block");
+    });
+
+
+    /**
+     * 关注用户
+     * @param user_id
+     * @param follower_id
+     */
+    function follow(user_id, follower_id) {
+        $.ajax({
+            url: `/follow/${user_id}/${follower_id}`,
+            type: "post",
+            success(data) {
+                if (data.flag) {
+                    location.reload();
+                }
+            },
+        });
+    }
+
+    /**
+     * 取消关注
+     * @param user_id
+     * @param follower_id
+     */
+    function unfollow(user_id, follower_id) {
+        $.ajax({
+            url: `/unfollow/${user_id}/${follower_id}`,
+            type: "delete",
+            success(data) {
+                if (data.flag) {
+                    location.reload();
+                }
+            }
+        });
+    }
 </script>
 {{template "write-comment" .}}
 </body>

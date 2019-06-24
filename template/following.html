@@ -14,35 +14,32 @@
         <div class="inner">
             <ul class="user-list">
                 <li>
-                    <a href="/home_page">
+                    <a href="/home_page/{{.home_page_id}}">
                         <div class="text">博文</div>
-                        <div class="num">12</div>
+                        <div class="num">{{.blog_num}}</div>
                     </a>
                 </li>
-                <li>
-                    <a href="/following/{{.id}}">
+                <li class="active">
+                    <a href="/following/{{.home_page_id}}">
                         <div class="text">正在关注</div>
-                        <div class="num">12</div>
+                        <div class="num">{{.following_num}}</div>
                     </a>
                 </li>
                 <li>
-                    <a href="/follower/{{.id}}">
+                    <a href="/follower/{{.home_page_id}}">
                         <div class="text">关注者</div>
-                        <div class="num">12</div>
+                        <div class="num">{{.follower_num}}</div>
                     </a>
                 </li>
             </ul>
-            <button class="layui-btn layui-btn-primary">
-                <i class="layui-icon">&#xe642;</i> 编辑个人资料
-            </button>
 
-            <a href="/home_page">
-                <div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div>
+            <a href="/home_page/{{.home_page_id}}">
+                <div class="avatar"><img src="{{.user_avatar}}" alt="NO IMG"></div>
             </a>
         </div>
     </div>
     <div class="middle clear-float">
-        <div class="user-info clear-float">
+        <div class="user-info-home clear-float">
             <div class="info">
                 <div class="nick">{{.name}}</div>
                 <div class="email">{{.email}}</div>
@@ -53,106 +50,41 @@
             </div>
         </div>
         <div class="show-area" style="background-color: transparent;">
-            <div class="user-info-item">
-                <div class="head">
-                    <img src="{{.background}}" alt="NO IMG">
-                </div>
-                <div class="tail">
-                    <a href="#"><div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div></a>
-                    <div class="name">{{.name}}</div>
-                    <div class="email">{{.email}}</div>
-                    <div class="info">{{.info}}</div>
-                </div>
-                <div class="footer">
-                    <div class="blog">
-                        <div class="name">博文</div>
-                        <div class="num"><a href="#">12</a></div>
+            {{range .follows_info}}
+                <div class="user-info-item">
+                    <div class="head">
+                        <img src="{{.background}}" alt="NO IMG">
                     </div>
-                    <div class="following">
-                        <div class="name">正在关注</div>
-                        <div class="num"><a href="#">12</a></div>
+                    <div class="tail">
+                        <a href="/home_page/{{.id}}">
+                            <div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div>
+                        </a>
+                        <div class="name">{{.name}}</div>
+                        <div class="email">{{.email}}</div>
+                        <div class="info">{{.info}}</div>
                     </div>
-                    <div class="follower">
-                        <div class="name">关注者</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                </div>
-            </div>
-            <div class="user-info-item">
-                <div class="head">
-                    <img src="{{.background}}" alt="NO IMG">
-                </div>
-                <div class="tail">
-                    <a href="#"><div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div></a>
-                    <div class="name">{{.name}}</div>
-                    <div class="email">{{.email}}</div>
-                    <div class="info">{{.info}}</div>
-                </div>
-                <div class="footer">
-                    <div class="blog">
-                        <div class="name">博文</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                    <div class="following">
-                        <div class="name">正在关注</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                    <div class="follower">
-                        <div class="name">关注者</div>
-                        <div class="num"><a href="#">12</a></div>
+                    <div class="footer">
+                        <div class="blog">
+                            <div class="name">博文</div>
+                            <div class="num">
+                                <a href="/home_page/{{.id}}">{{.blog_num}}</a>
+                            </div>
+                        </div>
+                        <div class="following">
+                            <div class="name">正在关注</div>
+                            <div class="num">
+                                <a href="/following/{{.id}}">{{.following}}</a>
+                            </div>
+                        </div>
+                        <div class="follower">
+                            <div class="name">关注者</div>
+                            <div class="num">
+                                <a href="/follower/{{.id}}">{{.follower}}</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="user-info-item">
-                <div class="head">
-                    <img src="{{.background}}" alt="NO IMG">
-                </div>
-                <div class="tail">
-                    <a href="#"><div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div></a>
-                    <div class="name">{{.name}}</div>
-                    <div class="email">{{.email}}</div>
-                    <div class="info">{{.info}}</div>
-                </div>
-                <div class="footer">
-                    <div class="blog">
-                        <div class="name">博文</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                    <div class="following">
-                        <div class="name">正在关注</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                    <div class="follower">
-                        <div class="name">关注者</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                </div>
-            </div>
-            <div class="user-info-item">
-                <div class="head">
-                    <img src="{{.background}}" alt="NO IMG">
-                </div>
-                <div class="tail">
-                    <a href="#"><div class="avatar"><img src="{{.avatar}}" alt="NO IMG"></div></a>
-                    <div class="name">{{.name}}</div>
-                    <div class="email">{{.email}}</div>
-                    <div class="info">{{.info}}</div>
-                </div>
-                <div class="footer">
-                    <div class="blog">
-                        <div class="name">博文</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                    <div class="following">
-                        <div class="name">正在关注</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                    <div class="follower">
-                        <div class="name">关注者</div>
-                        <div class="num"><a href="#">12</a></div>
-                    </div>
-                </div>
-            </div>
+            {{end}}
         </div>
     </div>
     {{template "footer" .}}
@@ -163,9 +95,6 @@
     (function () {
         $(".func-list li").removeClass("active");
         $(".func-list li:eq(1)").addClass("active");
-
-        $("#wrapper .user-banner .inner .user-list li").removeClass("active");
-        $("#wrapper .user-banner .inner .user-list li:eq(1)").addClass("active");
     })();
 </script>
 {{template "write-comment" .}}
