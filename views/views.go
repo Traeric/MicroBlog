@@ -189,59 +189,205 @@ func Index(c echo.Context) error {
 
 // 个人主页
 func HomePage(c echo.Context) error {
+	// 获取要查看的id
+	user_id, _ := strconv.Atoi(c.Param("user_id"))
 	// 读取用户信息
 	store := sessions.NewCookieStore([]byte(settings.BaseConfigDomain.SessionKey))
 	session, _ := store.Get(c.Request(), "userInfo")
+	// 统计用户的微博数目
+	var blog_num int
+	DB.Model(&models.Blog{}).Where("user_id = ?", user_id).Count(&blog_num)
+	// 统计用户的关注者和正在关注的人
+	var follower_num int
+	var following_num int
+	DB.Model(&models.Follow{}).Where("user_id = ?", user_id).Count(&following_num)
+	DB.Model(&models.Follow{}).Where("friend_id = ?", user_id).Count(&follower_num)
+
+	// 查看是否显示关注按钮还是取关按钮
+	var followed int
+	if user_id != session.Values["id"] {
+		// 查询自己有没有关注该用户
+		DB.Model(&models.Follow{}).Where("user_id = ? AND friend_id = ?", session.Values["id"], user_id).Count(&followed)
+	}
+	// 查询用户信息
+	var user_info models.UserProfile
+	DB.First(&user_info, "id = ?", user_id)
+
+	// 获取自己发的前前十条微博
+	var blog_data = make([]models.Blog, 10)
+	DB.Where("user_id = ?", user_id).Order("id desc").Limit(10).Find(&blog_data)
+	// 整理数据
+	var blogs []map[string]interface{}
+	for index, value := range blog_data {
+		item := map[string]interface{}{
+			"id":         value.ID,
+			"content":    value.Content,
+			"ThumbUpNum": value.ThumbUpNum,
+			"CommentNum": value.CommentNum,
+			"createAt":   value.CreatedAt.Format("2006年01月02日 15:05"),
+			"index":      index,
+		}
+		// 查询发布微博的用户信息
+		var user models.UserProfile
+		DB.First(&user, value.UserId)
+		item["user"] = user
+		// 查询微博的照片
+		DB.Model(&value).Related(&value.Photos)
+		item["Photos"] = value.Photos
+		// 查询评论
+		DB.Model(&value).Related(&value.Comments)
+		item["Comments"] = value.Comments
+		// 布局评论
+		// 将所有的评论从父级往下一级一级排好
+		var comments []models.Comment
+		DB.Find(&comments, "blog_id = ?", value.ID)
+		comment_list := LoadComment(comments)
+		item["comments"] = template.HTML(LoadCommentToString(comment_list))
+		blogs = append(blogs, item)
+	}
 
 	return c.Render(http.StatusMovedPermanently, "home_page.html", map[string]interface{}{
-		"id":         session.Values["id"],
-		"name":       session.Values["name"],
-		"email":      session.Values["email"],
-		"avatar":     session.Values["avatar"],
-		"background": session.Values["background"],
-		"info":       session.Values["info"],
-		"birth":      session.Values["birth"],
-		"create":     session.Values["create"],
+		"id":            session.Values["id"],
+		"home_page_id":  user_id,
+		"name":          user_info.Name,
+		"email":         user_info.Email,
+		"avatar":        session.Values["avatar"],
+		"user_avatar":   user_info.Avatar,
+		"background":    user_info.Background,
+		"info":          user_info.Info,
+		"birth":         user_info.Birthday.Format("2006年01月02日 15:05"),
+		"create":        user_info.CreatedAt.Format("2006年01月02日 15:05"),
+		"blog_num":      blog_num,
+		"follower_num":  follower_num,
+		"following_num": following_num,
+		"blogs":         blogs,
+		"followed":      followed, // 查看自己有没有关注该用户
 	})
 }
 
 // 正在关注
 func Following(c echo.Context) error {
 	user_id := c.Param("id") // 获取用户id
-	fmt.Println(user_id)
+	// 查询用户信息
+	var user_info models.UserProfile
+	DB.First(&user_info, "id = ?", user_id)
+	// 统计用户的微博数目
+	var blog_num int
+	DB.Model(&models.Blog{}).Where("user_id = ?", user_id).Count(&blog_num)
+	// 统计用户的关注者和正在关注的人
+	var follower_num int
+	var following_num int
+	DB.Model(&models.Follow{}).Where("user_id = ?", user_id).Count(&following_num)
+	DB.Model(&models.Follow{}).Where("friend_id = ?", user_id).Count(&follower_num)
 	// 查询用户正在关注的人的信息
+	var follows []models.Follow
+	DB.Find(&follows, "user_id = ?", user_id)
+	var follows_info []map[string]interface{}
+	for _, item := range follows {
+		// 查询用户信息
+		var user models.UserProfile
+		DB.First(&user, "id = ?", item.FriendId)
+		// 获取该用户发布的文章数目、正在关注、关注者
+		var friend_blog_num int
+		DB.Model(&models.Blog{}).Where("user_id = ?", user.ID).Count(&friend_blog_num)
+		var friend_follower_num int
+		var friend_following_num int
+		DB.Model(&models.Follow{}).Where("user_id = ?", user.ID).Count(&friend_following_num)
+		DB.Model(&models.Follow{}).Where("friend_id = ?", user.ID).Count(&friend_follower_num)
+		// 填充数据
+		follows_info = append(follows_info, map[string]interface{}{
+			"id":         user.ID,
+			"name":       user.Name,
+			"avatar":     user.Avatar,
+			"email":      user.Email,
+			"info":       user.Info,
+			"blog_num":   friend_blog_num,
+			"following":  friend_following_num,
+			"follower":   friend_follower_num,
+			"background": user.Background,
+		})
+	}
 
 	store := sessions.NewCookieStore([]byte(settings.BaseConfigDomain.SessionKey))
 	session, _ := store.Get(c.Request(), "userInfo")
 	return c.Render(http.StatusMovedPermanently, "following.html", map[string]interface{}{
-		"id":         session.Values["id"],
-		"name":       session.Values["name"],
-		"email":      session.Values["email"],
-		"avatar":     session.Values["avatar"],
-		"background": session.Values["background"],
-		"info":       session.Values["info"],
-		"birth":      session.Values["birth"],
-		"create":     session.Values["create"],
+		"id":            session.Values["id"],
+		"name":          user_info.Name,
+		"email":         user_info.Email,
+		"avatar":        session.Values["avatar"],
+		"user_avatar":   user_info.Avatar,
+		"background":    user_info.Background,
+		"info":          user_info.Info,
+		"birth":         user_info.Birthday.Format("2006年01月02日 15:05"),
+		"create":        user_info.CreatedAt.Format("2006年01月02日 15:05"),
+		"home_page_id":  user_id,
+		"blog_num":      blog_num,
+		"follower_num":  follower_num,
+		"following_num": following_num,
+		"follows_info":  follows_info,
 	})
 }
 
 // 关注者
 func Follower(c echo.Context) error {
 	user_id := c.Param("id") // 获取用户id
-	fmt.Println(user_id)
+	// 查询用户信息
+	var user_info models.UserProfile
+	DB.First(&user_info, "id = ?", user_id)
+	// 统计用户的微博数目
+	var blog_num int
+	DB.Model(&models.Blog{}).Where("user_id = ?", user_id).Count(&blog_num)
+	// 统计用户的关注者和正在关注的人
+	var follower_num int
+	var following_num int
+	DB.Model(&models.Follow{}).Where("user_id = ?", user_id).Count(&following_num)
+	DB.Model(&models.Follow{}).Where("friend_id = ?", user_id).Count(&follower_num)
 	// 查询用户正在关注的人的信息
+	var follows []models.Follow
+	DB.Find(&follows, "friend_id = ?", user_id)
+	var follows_info []map[string]interface{}
+	for _, item := range follows {
+		// 查询用户信息
+		var user models.UserProfile
+		DB.First(&user, "id = ?", item.UserId)
+		// 获取该用户发布的文章数目、正在关注、关注者
+		var friend_blog_num int
+		DB.Model(&models.Blog{}).Where("user_id = ?", user.ID).Count(&friend_blog_num)
+		var friend_follower_num int
+		var friend_following_num int
+		DB.Model(&models.Follow{}).Where("user_id = ?", user.ID).Count(&friend_following_num)
+		DB.Model(&models.Follow{}).Where("friend_id = ?", user.ID).Count(&friend_follower_num)
+		// 填充数据
+		follows_info = append(follows_info, map[string]interface{}{
+			"id":         user.ID,
+			"name":       user.Name,
+			"avatar":     user.Avatar,
+			"email":      user.Email,
+			"info":       user.Info,
+			"blog_num":   friend_blog_num,
+			"following":  friend_following_num,
+			"follower":   friend_follower_num,
+			"background": user.Background,
+		})
+	}
 
 	store := sessions.NewCookieStore([]byte(settings.BaseConfigDomain.SessionKey))
 	session, _ := store.Get(c.Request(), "userInfo")
 	return c.Render(http.StatusMovedPermanently, "follower.html", map[string]interface{}{
-		"id":         session.Values["id"],
-		"name":       session.Values["name"],
-		"email":      session.Values["email"],
-		"avatar":     session.Values["avatar"],
-		"background": session.Values["background"],
-		"info":       session.Values["info"],
-		"birth":      session.Values["birth"],
-		"create":     session.Values["create"],
+		"id":            session.Values["id"],
+		"name":          user_info.Name,
+		"email":         user_info.Email,
+		"avatar":        session.Values["avatar"],
+		"user_avatar":   user_info.Avatar,
+		"background":    user_info.Background,
+		"info":          user_info.Info,
+		"birth":         user_info.Birthday.Format("2006年01月02日 15:05"),
+		"create":        user_info.CreatedAt.Format("2006年01月02日 15:05"),
+		"home_page_id":  user_id,
+		"blog_num":      blog_num,
+		"follower_num":  follower_num,
+		"following_num": following_num,
+		"follows_info":  follows_info,
 	})
 }
 
@@ -382,5 +528,45 @@ func DeleteComment(c echo.Context) error {
 	return c.JSON(http.StatusOK, &ResultMsg{
 		Flag: true,
 		Msg:  "评论删除成功!",
+	})
+}
+
+// 删除博客
+func DeleteBlog(c echo.Context) error {
+	// 获取博客id
+	blog_id := c.Param("blog_id")
+	DB.Delete(models.Blog{}, "id = ?", blog_id)
+	return c.JSON(http.StatusOK, &ResultMsg{
+		Flag: true,
+		Msg:  "删除成功",
+	})
+}
+
+// 关注用户
+func Follow(c echo.Context) error {
+	// 获取用户的id
+	user_id, _ := strconv.Atoi(c.Param("user_id"))
+	follower_id, _ := strconv.Atoi(c.Param("follower_id"))
+	// 关注
+	DB.Create(&models.Follow{
+		UserId:   uint(follower_id),
+		FriendId: uint(user_id),
+	})
+	return c.JSON(http.StatusOK, &ResultMsg{
+		Flag: true,
+		Msg:  "关注成功",
+	})
+}
+
+// 取消关注
+func UnFollow(c echo.Context) error {
+	// 获取用户的id
+	user_id, _ := strconv.Atoi(c.Param("user_id"))
+	follower_id, _ := strconv.Atoi(c.Param("follower_id"))
+	// 取消关注
+	DB.Unscoped().Where("user_id = ? AND friend_id = ?", uint(follower_id), uint(user_id)).Delete(&models.Follow{})
+	return c.JSON(http.StatusOK, &ResultMsg{
+		Flag: true,
+		Msg:  "取消关注成功",
 	})
 }

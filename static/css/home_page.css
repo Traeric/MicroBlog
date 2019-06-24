@@ -3,7 +3,7 @@
     height: 250px;
     background-image: url("/static/images/banner.png");
     background-repeat: no-repeat;
-    background-size: 100% 250px;
+    background-size: 100% auto;
 }
 
 #wrapper .user-banner {
@@ -80,46 +80,46 @@
 
 #wrapper .middle {}
 
-#wrapper .middle .user-info {
+#wrapper .middle .user-info-home {
     float: left;
     width: 25%;
 }
 
-#wrapper .middle .user-info .info {
+#wrapper .middle .user-info-home .info {
     width: 240px;
     float: right;
     box-sizing: border-box;
     padding-right: 20px;
 }
 
-#wrapper .middle .user-info .info .nick {
+#wrapper .middle .user-info-home .info .nick {
     margin-top: 40px;
     font-weight: bolder;
     font-size: 18px;
 }
 
-#wrapper .middle .user-info .info .email {
+#wrapper .middle .user-info-home .info .email {
     height: 30px;
     line-height: 30px;
     color: #767676;
 }
 
-#wrapper .middle .user-info .info .info-l {
+#wrapper .middle .user-info-home .info .info-l {
     margin-top: 15px;
     color: #545454;
 }
 
-#wrapper .middle .user-info .info .birthday {
+#wrapper .middle .user-info-home .info .birthday {
     margin-top: 30px;
 }
 
-#wrapper .middle .user-info .info .birthday, .create {
+#wrapper .middle .user-info-home .info .birthday, .create {
     color: #464646;
     height: 25px;
     line-height: 25px;
 }
 
-#wrapper .middle .user-info .info .birthday, .create i {
+#wrapper .middle .user-info-home .info .birthday, .create i {
     color: #5a5a5a;
 }
 

@@ -104,3 +104,4 @@ func LoadCommentToString(comment_list []map[string]interface{}) string {
 	}
 	return resultStr
 }
+
