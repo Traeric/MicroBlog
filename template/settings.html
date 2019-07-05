@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户设置</title>
+    {{template "head" .}}
+    <link rel="stylesheet" href="/static/css/setting.css">
+</head>
+<body class="bg">
+<div id="wrapper">
+    {{template "nav" .}}
+    <div class="setting-box">
+        <div class="account">
+            <fieldset class="layui-elem-field">
+                <legend>修改账户信息</legend>
+                <div class="layui-field-box">
+                    <div class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">修改邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="email" name="nick" required lay-verify="required" placeholder="请输入邮箱"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux" style="padding: 0 !important;">
+                                <button class="layui-btn layui-btn-radius">修改邮箱</button>
+                            </div>
+                        </div>
+                        <!-- 修改密码 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">旧密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" name="old-password" required lay-verify="required"
+                                       placeholder="请输入旧密码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" name="new-password" required lay-verify="required"
+                                       placeholder="请输入新密码" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">确认新密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" name="confirm-password" required lay-verify="required"
+                                       placeholder="确认新密码" autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux" style="padding: 0 !important;">
+                                <button class="layui-btn layui-btn-radius layui-btn-warm">修改密码</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="info">
+            <fieldset class="layui-elem-field">
+                <legend>修改用户信息</legend>
+                <div class="layui-field-box">
+                    <div class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">修改昵称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="nick" required lay-verify="required" placeholder="请输入昵称"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux" style="padding: 0 !important;">
+                                <button class="layui-btn layui-btn-radius">修改昵称</button>
+                            </div>
+                        </div>
+                        <!-- 修改个人简介 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">修改简介</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="info" required lay-verify="required" placeholder="请输入个人简介"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux" style="padding: 0 !important;">
+                                <button class="layui-btn layui-btn-radius layui-btn-normal">修改个人简介</button>
+                            </div>
+                        </div>
+                        <!-- 修改生日 -->
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">修改生日</label>
+                            <div class="layui-input-inline">
+                                <input type="text" class="layui-input" name="birth" placeholder="请填写日期">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux" style="padding: 0 !important;">
+                                <button class="layui-btn layui-btn-radius layui-btn-danger">修改生日</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
+        <div class="image">
+            <blockquote class="layui-elem-quote">修改图片设置</blockquote>
+            <div class="left">
+                <div class="img">
+                    <img src="{{.avatar}}" alt="NO IMG">
+                </div>
+                <div class="btn">
+                    <button type="button" class="layui-btn layui-btn-fluid">更换头像</button>
+                </div>
+            </div>
+            <div class="right">
+                <div class="img back-img">
+                    <img src="{{.background}}" alt="NO IMG">
+                </div>
+                <div class="btn">
+                    <button type="button" class="layui-btn layui-btn-fluid layui-btn-warm">更换背景图</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 个人主页样式
+    (function () {
+        $(".func-list li").removeClass("active");
+        $(".func-list li:eq(4)").addClass("active");
+    })();
+</script>
+</body>
+</html>

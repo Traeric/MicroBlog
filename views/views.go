@@ -570,3 +570,21 @@ func UnFollow(c echo.Context) error {
 		Msg:  "取消关注成功",
 	})
 }
+
+// 用户设置界面
+func Settings(c echo.Context) error {
+	store := sessions.NewCookieStore([]byte(settings.BaseConfigDomain.SessionKey))
+	session, _ := store.Get(c.Request(), "userInfo")
+
+	return c.Render(http.StatusMovedPermanently, "settings.html", map[string]interface{}{
+		"id":     session.Values["id"],
+		"avatar": session.Values["avatar"],
+		//"name":          user_info.Name,
+		//"email":         user_info.Email,
+		//"user_avatar":   user_info.Avatar,
+		"background": session.Values["background"],
+		//"info":          user_info.Info,
+		//"birth":         user_info.Birthday.Format("2006年01月02日 15:05"),
+		//"create":        user_info.CreatedAt.Format("2006年01月02日 15:05"),
+	})
+}
