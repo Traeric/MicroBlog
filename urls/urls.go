@@ -20,4 +20,5 @@ func Urls_pattern(e *echo.Echo) {
 	e.DELETE("/delete_blog/:blog_id", views.DeleteBlog)
 	e.POST("/follow/:user_id/:follower_id", views.Follow)
 	e.DELETE("/unfollow/:user_id/:follower_id", views.UnFollow)
+	e.GET("/settings", views.Settings)
 }
